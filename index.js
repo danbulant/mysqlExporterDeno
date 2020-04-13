@@ -2,7 +2,6 @@ const express = require("express");
 const fs = require("fs");
 const mysql = require("mysql");
 const opn = require('opn');
-const pool = mysql.createPool(config.mysql);
 const app = express();
 
 var apiOnly = false;
@@ -14,6 +13,9 @@ if(!fs.existsSync(__dirname + "/static/index.html")){
     console.warn("View is missing, running in API only mode");
     apiOnly = true
 }
+
+const config = JSON.parse(fs.readFileSync("./config.json", "utf-8"));
+const pool = mysql.createPool(config.mysql);
 
 function query(conn, data, params = []) {
     return new Promise((resolve, reject) => {
