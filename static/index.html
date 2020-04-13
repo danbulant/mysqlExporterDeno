@@ -1,0 +1,67 @@
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MySQL exporter</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div id="app">Loading...</div>
+
+    <script>
+        const app = document.getElementById("app");
+
+        function htmlToElement(html) {
+            var template = document.createElement('template');
+            html = html.trim(); // Never return a text node of whitespace as the result
+            template.innerHTML = html;
+            return template.content.firstChild;
+        }
+
+        (async () => {
+            var res = await fetch("/tables");
+            var tables = await res.json();
+            app.innerText = "";
+
+            for (var table in tables) {
+                var data = tables[table];
+                var tableEl = document.createElement("table");
+                var title = document.createElement("h2");
+
+                title.innerText = table;
+                app.appendChild(title);
+
+                var head = htmlToElement(`
+                <tr>
+                    <th>Field</th>
+                    <th>Type</th>
+                    <th>Null?</th>
+                    <th>Key?</th>
+                    <th>Default</th>
+                    <th>Extra?</th>
+                </tr>
+                `);
+
+                tableEl.appendChild(head);
+                for(var field of data) {
+                    tableEl.appendChild(htmlToElement(`
+                    <tr>
+                        <td>${field.Field}</td>
+                        <td>${field.Type}</td>
+                        <td>${field.Null}</td>
+                        <td>${field.Key}</td>
+                        <td>${field.Default}</td>
+                        <td>${field.Extra}</td>
+                    </tr>
+                    `))
+                }
+
+                app.appendChild(tableEl);
+            }
+        })()
+    </script>
+</body>
+
+</html>

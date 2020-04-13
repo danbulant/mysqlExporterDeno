@@ -1,0 +1,44 @@
+body {
+    margin: 30px auto;
+    max-width: 650px;
+    line-height: 1.6;
+    font-size: 18px;
+    color: #444;
+    padding: 0 10px
+}
+
+h1,
+h2,
+h3 {
+    font-family: Simplifica;
+    line-height: 1.2
+}
+
+a {
+    text-decoration: none;
+    color: rgb(0, 140, 255);
+}
+
+a:visited {
+    color: rgb(153, 0, 255);
+}
+
+table,
+th,
+td {
+    border: 1px solid black;
+    border-collapse: collapse;
+}
+
+th {
+    padding: 10px;
+}
+
+td {
+    padding: 5px;
+}
+
+tr:hover {
+    background-color: #444;
+    color: white;
+}
