@@ -39,7 +39,8 @@ app.get("/", (req, res) => {
 
 app.get("/database", (req, res) => {
     res.json({
-        name: config.mysql.database
+        name: config.mysql.database,
+        host: config.mysql.host
     });
 });
 
