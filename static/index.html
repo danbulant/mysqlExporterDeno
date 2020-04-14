@@ -78,6 +78,9 @@
 
             var res = await fetch("/tables");
             var tables = await res.json();
+            var re = await fetch("/fieldsIgnored");
+            var fieldsIgnored = await re.json();
+            fieldsIgnored = fieldsIgnored.map(el => el.toLowerCase());
             app.innerText = "";
 
             for (var table in tables) {
@@ -102,29 +105,34 @@
 
                 var head = htmlToElement(`
                 <tr>
-                    <th>Field</th>
-                    <th>Type</th>
-                    <th>Null?</th>
-                    <th>Key?</th>
-                    <th>Default</th>
-                    <th>Extra?</th>
-                    <th>Privileges</th>
-                    <th>Comment</th>
+                    ${fieldsIgnored.includes("field") ? "" : "<th>Field</th>" }
+                    ${fieldsIgnored.includes("type") ? "" : "<th>Type</th>" }
+                    ${fieldsIgnored.includes("collation") ? "" : "<th>Collation</th>" }
+                    ${fieldsIgnored.includes("null") ? "" : "<th>Null?</th>" }
+                    ${fieldsIgnored.includes("key") ? "" : "<th>Key?</th>" }
+                    ${fieldsIgnored.includes("default") ? "" : "<th>Default</th>" }
+                    ${fieldsIgnored.includes("extra") ? "" : "<th>Extra?</th>" }
+                    ${fieldsIgnored.includes("privileges") ? "" : "<th>Privileges</th>" }
+                    ${fieldsIgnored.includes("comment") ? "" : "<th>Comment</th>" }
                 </tr>
                 `);
 
                 tableEl.appendChild(head);
-                for(var field of data.columns) {
+                for(var column of data.columns) {
+                    var el = "";
+                    for(var field in column) {
+                        if(fieldsIgnored.includes(field.toLowerCase())) continue;
+                        if(column[field]) {
+                            el += "<td>" + column[field] + "</td>";
+                        } else if(field == "Default") {
+                            el += "<td>null</td>";
+                        } else {
+                            el += "<td></td>";
+                        }
+                    }
                     tableEl.appendChild(htmlToElement(`
                     <tr>
-                        <td>${field.Field}</td>
-                        <td>${field.Type}</td>
-                        <td>${field.Null}</td>
-                        <td>${field.Key}</td>
-                        <td>${field.Default}</td>
-                        <td>${field.Extra}</td>
-                        <td>${field.Privileges}</td>
-                        <td>${field.Comment}</td>
+                        ${el}
                     </tr>
                     `))
                 }
