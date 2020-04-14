@@ -75,7 +75,7 @@
         .key {
             width: 30px;
         }
-        
+
         .extra {
             width: 35px;
         }
@@ -204,7 +204,7 @@
                             case "null":
                                 let cb = document.createElement("input");
                                 cb.type = "checkbox";
-                                cb.value = (column[field] === "YES" ? 1 : 0);
+                                cb.checked = column[field] === "YES";
                                 cb.disabled = true;
                                 column[field] = cb;
                             case "extra":
