@@ -133,6 +133,13 @@
             }
         };
 
+        let s = document.getElementsByClassName("hiddable");
+        if(s) {
+            for(var el of s) {
+                el.onclick = func;
+            }
+        }
+
         function key(title, color, color2, color3) {
             return `<svg xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns="http://www.w3.org/2000/svg" height="24"
         width="24" version="1.1" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/">
@@ -324,6 +331,7 @@ l145 -6 113 -146 c62 -80 188 -237 280 -348 l167 -202 50 -6 c190 -26 347
                                 shown.id = "span_" + table + "_" + column.Field;
 
                                 span.onclick = func;
+                                span.className = "hiddable";
 
                                 // hidden.onclick = e => {
                                 //     let hidden = document.getElementById(e.target.id);
