@@ -12,7 +12,7 @@
     <style>
         body {
             margin: 30px auto;
-            max-width: 800px;
+            max-width: 900px;
             line-height: 1.6;
             font-size: 18px;
             color: #444;
@@ -40,10 +40,13 @@
         td {
             border: 1px solid black;
             border-collapse: collapse;
+            word-break: normal;
+            text-align: center;
         }
 
         table {
-            width: 70%;
+            width: min(90vw, 900px);
+            table-layout: fixed;
         }
         
         th {
@@ -57,6 +60,14 @@
         tr:hover {
             background-color: #444;
             color: white;
+        }
+
+        .collation {
+            word-break: break-all;
+        }
+
+        .null, .key {
+            width: 40px;
         }
     </style>
 
@@ -72,16 +83,30 @@
 
         (async () => {
             if(window.location.hostname !== "localhost") {
-                console.log("Fetching info supported only from localhost!");
+                console.warn("Fetching info supported only from localhost!");
                 return;
             }
+            
+            var dbRes = await fetch("/database");
+            var db = await dbRes.json();
+            if(!dbRes.ok) return console.warn("Couldn't fetch data");
+
+            app.innerText = "";
+
+            const appTitle = document.createElement("h1");
+            appTitle.innerText = "Data dictionary of " + db.name;
+            app.appendChild(appTitle);
+
+            const date = document.createElement("p");
+            var d = new Date();
+            date.innerText = "Generated " + d.toString() + ".";
+            app.appendChild(date);
 
             var res = await fetch("/tables");
             var tables = await res.json();
             var re = await fetch("/fieldsIgnored");
             var fieldsIgnored = await re.json();
             fieldsIgnored = fieldsIgnored.map(el => el.toLowerCase());
-            app.innerText = "";
 
             for (var table in tables) {
                 var data = tables[table];
@@ -105,15 +130,15 @@
 
                 var head = htmlToElement(`
                 <tr>
-                    ${fieldsIgnored.includes("field") ? "" : "<th>Field</th>" }
-                    ${fieldsIgnored.includes("type") ? "" : "<th>Type</th>" }
-                    ${fieldsIgnored.includes("collation") ? "" : "<th>Collation</th>" }
-                    ${fieldsIgnored.includes("null") ? "" : "<th>Null?</th>" }
-                    ${fieldsIgnored.includes("key") ? "" : "<th>Key?</th>" }
-                    ${fieldsIgnored.includes("default") ? "" : "<th>Default</th>" }
-                    ${fieldsIgnored.includes("extra") ? "" : "<th>Extra?</th>" }
-                    ${fieldsIgnored.includes("privileges") ? "" : "<th>Privileges</th>" }
-                    ${fieldsIgnored.includes("comment") ? "" : "<th>Comment</th>" }
+                    ${fieldsIgnored.includes("field") ? "" : "<th class='field'>Field</th>" }
+                    ${fieldsIgnored.includes("type") ? "" : "<th class='type'>Type</th>" }
+                    ${fieldsIgnored.includes("collation") ? "" : "<th class='collation'>Collation</th>" }
+                    ${fieldsIgnored.includes("null") ? "" : "<th class='null'>Null?</th>" }
+                    ${fieldsIgnored.includes("key") ? "" : "<th class='key'>Key?</th>" }
+                    ${fieldsIgnored.includes("default") ? "" : "<th class='default'>Default</th>" }
+                    ${fieldsIgnored.includes("extra") ? "" : "<th class='extra'>Extra?</th>" }
+                    ${fieldsIgnored.includes("privileges") ? "" : "<th class='privileges'>Privileges</th>" }
+                    ${fieldsIgnored.includes("comment") ? "" : "<th class='comment'>Comment</th>" }
                 </tr>
                 `);
 
@@ -122,12 +147,15 @@
                     var el = "";
                     for(var field in column) {
                         if(fieldsIgnored.includes(field.toLowerCase())) continue;
+                        if(field.toLowerCase() === "privileges") {
+                            column[field] = column[field].split(",").join(", ");
+                        }
                         if(column[field]) {
-                            el += "<td>" + column[field] + "</td>";
+                            el += "<td class='" + field.toLowerCase() + "'>" + column[field] + "</td>";
                         } else if(field == "Default") {
-                            el += "<td>null</td>";
+                            el += "<td class='" + field.toLowerCase() + "'>null</td>";
                         } else {
-                            el += "<td></td>";
+                            el += "<td class='" + field.toLowerCase() + "'></td>";
                         }
                     }
                     tableEl.appendChild(htmlToElement(`
