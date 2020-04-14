@@ -139,7 +139,7 @@
                 function addField(fieldName) {
                     return fieldsIgnored.includes(fieldName.toLowerCase()) ? "" : `<th class='${fieldName.toLowerCase()}'>${fieldName}</th>`;
                 }
-                
+
                 var head = htmlToElement(`
                 <tr>
                     ${addField("Field")}
@@ -156,25 +156,37 @@
 
                 tableEl.appendChild(head);
                 for (var column of data.columns) {
-                    var el = "";
+                    var el = document.createElement("tr");
                     for (var field in column) {
                         if (fieldsIgnored.includes(field.toLowerCase())) continue;
+                        var td = document.createElement("td");
+                        td.className = field.toLowerCase();
 
-                        if (field.toLowerCase() === "privileges") {
-                            column[field] = column[field].split(",").join(", ");
+                        switch(field.toLowerCase()) {
+                            case "privileges":
+                                column[field] = column[field].split(",").join(", ");
+                                break;
+                            case "null":
+                                let cb = document.createElement("input");
+                                cb.type = "checkbox";
+                                cb.value = (column[field] === "YES");
+                                cb.disabled = true;
+                                column[field] = cb;
                         }
 
                         if (column[field]) {
-                            el += `<td class='${field.toLowerCase()}'>${column[field]}</td>`;
+                            if(column[field] instanceof HTMLElement) {
+                                td.appendChild(column[field]);
+                            } else {
+                                td.innerText = column[field];
+                            }
                         } else if (field == "Default") {
-                            el += "<td class='default'>null</td>";
-                        } else {
-                            el += `<td class='${field.toLowerCase()}'></td>`;
+                            td.innerText = "null";
                         }
-
+                        el.appendChild(td);
                     }
 
-                    tableEl.appendChild(htmlToElement(`<tr>${el}</tr>`));
+                    tableEl.appendChild(el);
                 }
 
                 app.appendChild(tableEl);
