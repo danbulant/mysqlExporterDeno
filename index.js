@@ -28,7 +28,7 @@ function query(conn, data, params = []) {
 };
 
 if(!apiOnly)
-    app.use("/view", express.static('static'))
+    app.use("/view", express.static(__dirname + '/static'))
 
 app.get("/", (req, res) => {
     res.json({
