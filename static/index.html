@@ -74,7 +74,7 @@
             width: 30px;
         }
 
-        .default {
+        .default, .extra {
             width: 50px;
         }
     </style>
@@ -172,6 +172,11 @@
                                 cb.value = (column[field] === "YES");
                                 cb.disabled = true;
                                 column[field] = cb;
+                            case "extra":
+                                if(column[field] === "auto_increment") {
+                                    column[field] = "AI";
+                                    td.title = "Auto increment";
+                                }
                         }
 
                         if (column[field]) {
