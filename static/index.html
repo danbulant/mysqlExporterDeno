@@ -89,6 +89,10 @@
             background-color: #444;
             color: white;
         }
+
+        .hidden {
+            display: none;
+        }
     </style>
 
     <!-- 
@@ -286,6 +290,45 @@ l145 -6 113 -146 c62 -80 188 -237 280 -348 l167 -202 50 -6 c190 -26 347
                                 cb.checked = column[field] === "NO";
                                 cb.disabled = true;
                                 column[field] = cb;
+                                break;
+                            case "comment":
+                                var text = column[field];
+                                column[field] = document.createElement("span");
+                                var span = column[field];
+                                if(text.length < 20) {
+                                    span.innerText = text;
+                                    break;
+                                }
+                                var shown = document.createElement("span");
+                                shown.innerText = text.substr(0, 15) + "...";
+                                var hidden = document.createElement("span");
+                                hidden.innerText = text.substr(15);
+                                hidden.className = "hidden";
+                                hidden.id = "hidden_span_" + table + "_" + column.Field;
+                                shown.id = "span_" + table + "_" + column.Field;
+
+                                span.onclick = e => {
+                                    var id = (e.target.id.startsWith("hidden_") ? "" : "hidden_") + e.target.id;
+                                    var idShort = (!e.target.id.startsWith("hidden_") ? e.target.id : e.target.id.substr("hidden_".length));
+
+                                    let hidden = document.getElementById(id);
+                                    hidden.classList.toggle("hidden");
+                                    
+                                    if(hidden.classList.contains("hidden")) {
+                                        document.getElementById(idShort).innerText += "...";
+                                    } else {
+                                        document.getElementById(idShort).innerText = document.getElementById(idShort).innerText.substr(0, document.getElementById(idShort).innerText.length - 3);
+                                    }
+                                }
+
+                                // hidden.onclick = e => {
+                                //     let hidden = document.getElementById(e.target.id);
+                                //     hidden.classList.toggle("hidden");
+                                // }
+
+                                span.appendChild(shown);
+                                span.appendChild(hidden);
+
                                 break;
                             case "key":
                                 switch(column[field]) {
