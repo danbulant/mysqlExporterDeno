@@ -37,6 +37,12 @@ app.get("/", (req, res) => {
     });
 });
 
+app.get("/database", (req, res) => {
+    res.json({
+        name: config.mysql.database
+    });
+});
+
 app.get("/fieldsIgnored", (req, res) => {
     var fi = config.fields_ignored;
     if(!Array.isArray(fi)) fi = [];
