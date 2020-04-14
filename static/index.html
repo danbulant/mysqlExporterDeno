@@ -118,6 +118,21 @@
 
 
     <script>
+        const func = e => {
+            var id = (e.target.id.startsWith("hidden_") ? "" : "hidden_") + e.target.id;
+            var idShort = (!e.target.id.startsWith("hidden_") ? e.target.id : e.target.id.substr("hidden_".length));
+
+            let hidden = document.getElementById(id);
+            hidden.classList.toggle("hidden");
+
+            if (hidden.classList.contains("hidden")) {
+                document.getElementById(idShort).innerText += "...";
+            } else {
+                document.getElementById(idShort).innerText = document.getElementById(idShort).innerText.substr(0,
+                    document.getElementById(idShort).innerText.length - 3);
+            }
+        };
+
         function key(title, color, color2, color3) {
             return `<svg xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns="http://www.w3.org/2000/svg" height="24"
         width="24" version="1.1" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/">
@@ -140,6 +155,7 @@
         </g>
     </svg>`;
         }
+
         function multikey() {
             return `<svg version="1.0" xmlns="http://www.w3.org/2000/svg"
  width="22.000000pt" height="24.000000pt" viewBox="0 0 1113.000000 1280.000000"
@@ -295,7 +311,7 @@ l145 -6 113 -146 c62 -80 188 -237 280 -348 l167 -202 50 -6 c190 -26 347
                                 var text = column[field];
                                 column[field] = document.createElement("span");
                                 var span = column[field];
-                                if(text.length < 20) {
+                                if (text.length < 20) {
                                     span.innerText = text;
                                     break;
                                 }
@@ -307,19 +323,7 @@ l145 -6 113 -146 c62 -80 188 -237 280 -348 l167 -202 50 -6 c190 -26 347
                                 hidden.id = "hidden_span_" + table + "_" + column.Field;
                                 shown.id = "span_" + table + "_" + column.Field;
 
-                                span.onclick = e => {
-                                    var id = (e.target.id.startsWith("hidden_") ? "" : "hidden_") + e.target.id;
-                                    var idShort = (!e.target.id.startsWith("hidden_") ? e.target.id : e.target.id.substr("hidden_".length));
-
-                                    let hidden = document.getElementById(id);
-                                    hidden.classList.toggle("hidden");
-                                    
-                                    if(hidden.classList.contains("hidden")) {
-                                        document.getElementById(idShort).innerText += "...";
-                                    } else {
-                                        document.getElementById(idShort).innerText = document.getElementById(idShort).innerText.substr(0, document.getElementById(idShort).innerText.length - 3);
-                                    }
-                                }
+                                span.onclick = func;
 
                                 // hidden.onclick = e => {
                                 //     let hidden = document.getElementById(e.target.id);
@@ -331,26 +335,29 @@ l145 -6 113 -146 c62 -80 188 -237 280 -348 l167 -202 50 -6 c190 -26 347
 
                                 break;
                             case "key":
-                                switch(column[field]) {
+                                switch (column[field]) {
                                     case "PRI":
-                                        column[field] = htmlToElement(key("Primary key", "#f39c12", "#f1c40f", "#f39c12"));
+                                        column[field] = htmlToElement(key("Primary key", "#f39c12", "#f1c40f",
+                                            "#f39c12"));
                                         break;
                                     case "UNI":
-                                        column[field] = htmlToElement(key("Unique key", "#bfbfbf", "#dbdbdb", "#808080"));
+                                        column[field] = htmlToElement(key("Unique key", "#bfbfbf", "#dbdbdb",
+                                            "#808080"));
                                         break;
                                     case "MUL":
                                         column[field] = "";
                                         break;
-                                    case "": break;
+                                    case "":
+                                        break;
                                     default:
                                         console.error("Unknown key:", column[field]);
                                 }
-                            case "extra":
-                                if (column[field] === "auto_increment") {
-                                    column[field] = "AI";
-                                    td.title = "Auto increment";
-                                }
-                                break;
+                                case "extra":
+                                    if (column[field] === "auto_increment") {
+                                        column[field] = "AI";
+                                        td.title = "Auto increment";
+                                    }
+                                    break;
                         }
 
                         if (column[field]) {
@@ -366,11 +373,11 @@ l145 -6 113 -146 c62 -80 188 -237 280 -348 l167 -202 50 -6 c190 -26 347
                     }
 
                     tableEl.appendChild(el);
-                    
+
                     let t = document.querySelector(`#${el.id} > .key`);
-                    
+
                     var d = data.indexes.filter(e => e.Column_name === column.Field);
-                    if(d[0] && !t.childElementCount)
+                    if (d[0] && !t.childElementCount)
                         t.appendChild(htmlToElement(multikey()));
                 }
             }
