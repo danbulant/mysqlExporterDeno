@@ -138,9 +138,13 @@
             const appTitle = document.createElement("h1");
             appTitle.innerText = "Data dictionary of " + db.name;
             app.appendChild(appTitle);
+
             const date = document.createElement("p");
             date.innerText = "Loading table information...";
             app.appendChild(date);
+
+            const tableList = document.createElement("ul");
+            app.appendChild(tableList);
 
             var res = await fetch("/tables");
             var tables = await res.json();
@@ -154,7 +158,7 @@
                 var data = tables[table];
                 var tableEl = document.createElement("table");
                 var title = document.createElement("h2");
-
+                title.id = table.replace(/[\s]/g, "");
                 title.innerText = table;
                 app.appendChild(title);
 
@@ -163,6 +167,13 @@
                     app.appendChild(htmlToElement(`<p>${data}<p>`));
                     continue;
                 }
+
+                var tableItem = document.createElement("li");
+                var tableLink = document.createElement("a");
+                tableItem.appendChild(tableLink);
+                tableLink.href = "#" + table.replace(/[\s]/g, "");
+                tableLink.innerText = table;
+                tableList.appendChild(tableItem);
 
                 try {
                     var comment = document.createElement("p");
