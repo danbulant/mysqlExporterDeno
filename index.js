@@ -37,6 +37,10 @@ app.get("/", (req, res) => {
     });
 });
 
+app.get("/fieldsIgnored", (req, res) => {
+    res.json(config.fields_ignored);
+});
+
 app.get("/tables", (req, res) => {
     pool.query("SHOW tables", async (err, resp, fields) => {
         if(err) {
@@ -51,8 +55,17 @@ app.get("/tables", (req, res) => {
 
         var obj = {};
         for(var r of result) {
+            obj[r] = {
+                name: r,
+                comment: "",
+                columns: []
+            };
             try {
-                obj[r] = await query(pool, "SHOW FULL COLUMNS FROM " + r);
+                obj[r].columns = await query(pool, "SHOW FULL COLUMNS FROM " + r);
+                obj[r].comment = await query(pool, `SELECT table_comment 
+                FROM INFORMATION_SCHEMA.TABLES 
+                WHERE table_schema=? 
+                    AND table_name=?`, [config.mysql.database, r]);
             } catch(e){
                 console.error(e);
             }

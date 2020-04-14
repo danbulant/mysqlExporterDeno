@@ -4,11 +4,61 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MySQL exporter</title>
-    <link rel="stylesheet" href="styles.css">
 </head>
 
 <body>
     <div id="app">Loading...</div>
+
+    <style>
+        body {
+            margin: 30px auto;
+            max-width: 800px;
+            line-height: 1.6;
+            font-size: 18px;
+            color: #444;
+            padding: 0 10px
+        }
+        
+        h1,
+        h2,
+        h3 {
+            font-family: Simplifica;
+            line-height: 1.2
+        }
+        
+        a {
+            text-decoration: none;
+            color: rgb(0, 140, 255);
+        }
+        
+        a:visited {
+            color: rgb(153, 0, 255);
+        }
+        
+        table,
+        th,
+        td {
+            border: 1px solid black;
+            border-collapse: collapse;
+        }
+
+        table {
+            width: 70%;
+        }
+        
+        th {
+            padding: 10px;
+        }
+        
+        td {
+            padding: 5px;
+        }
+        
+        tr:hover {
+            background-color: #444;
+            color: white;
+        }
+    </style>
 
     <script>
         const app = document.getElementById("app");
@@ -38,6 +88,18 @@
                 title.innerText = table;
                 app.appendChild(title);
 
+                if(!data.columns) {
+                    console.error(data);
+                    app.appendChild(htmlToElement("<p>" + data + "<p>"));
+                    continue;
+                }
+
+                try {
+                    var comment = document.createElement("p");
+                    comment.innerText = data.comment[0].table_comment;
+                    app.appendChild(comment);
+                } catch(e) { }
+
                 var head = htmlToElement(`
                 <tr>
                     <th>Field</th>
@@ -52,7 +114,7 @@
                 `);
 
                 tableEl.appendChild(head);
-                for(var field of data) {
+                for(var field of data.columns) {
                     tableEl.appendChild(htmlToElement(`
                     <tr>
                         <td>${field.Field}</td>
