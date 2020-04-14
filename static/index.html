@@ -21,6 +21,11 @@
         }
 
         (async () => {
+            if(window.location.hostname !== "localhost") {
+                console.log("Fetching info supported only from localhost!");
+                return;
+            }
+
             var res = await fetch("/tables");
             var tables = await res.json();
             app.innerText = "";
@@ -41,6 +46,8 @@
                     <th>Key?</th>
                     <th>Default</th>
                     <th>Extra?</th>
+                    <th>Privileges</th>
+                    <th>Comment</th>
                 </tr>
                 `);
 
@@ -54,6 +61,8 @@
                         <td>${field.Key}</td>
                         <td>${field.Default}</td>
                         <td>${field.Extra}</td>
+                        <td>${field.Privileges}</td>
+                        <td>${field.Comment}</td>
                     </tr>
                     `))
                 }

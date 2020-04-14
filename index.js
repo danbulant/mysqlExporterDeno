@@ -52,7 +52,7 @@ app.get("/tables", (req, res) => {
         var obj = {};
         for(var r of result) {
             try {
-                obj[r] = await query(pool, "DESCRIBE " + r);
+                obj[r] = await query(pool, "SHOW FULL COLUMNS FROM " + r);
             } catch(e){
                 console.error(e);
             }
