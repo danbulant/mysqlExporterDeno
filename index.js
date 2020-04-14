@@ -71,6 +71,7 @@ app.get("/tables", (req, res) => {
             };
             try {
                 obj[r].columns = await query(pool, "SHOW FULL COLUMNS FROM " + r);
+                obj[r].indexes = await query(pool, "SHOW INDEXES FROM " + r);
                 obj[r].comment = await query(pool, `SELECT table_comment 
                 FROM INFORMATION_SCHEMA.TABLES 
                 WHERE table_schema=? 
