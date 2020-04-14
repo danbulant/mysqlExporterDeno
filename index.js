@@ -38,7 +38,9 @@ app.get("/", (req, res) => {
 });
 
 app.get("/fieldsIgnored", (req, res) => {
-    res.json(config.fields_ignored);
+    var fi = config.fields_ignored;
+    if(!Array.isArray(fi)) fi = [];
+    res.json(fi);
 });
 
 app.get("/tables", (req, res) => {
