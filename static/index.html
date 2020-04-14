@@ -18,23 +18,23 @@
             color: #444;
             padding: 0 10px
         }
-        
+
         h1,
         h2,
         h3 {
             font-family: Simplifica;
             line-height: 1.2
         }
-        
+
         a {
             text-decoration: none;
             color: rgb(0, 140, 255);
         }
-        
+
         a:visited {
             color: rgb(153, 0, 255);
         }
-        
+
         table,
         th,
         td {
@@ -48,15 +48,15 @@
             width: min(90vw, 900px);
             table-layout: fixed;
         }
-        
+
         th {
             padding: 10px;
         }
-        
+
         td {
             padding: 5px;
         }
-        
+
         tr:hover {
             background-color: #444;
             color: white;
@@ -66,7 +66,8 @@
             word-break: break-all;
         }
 
-        .null, .key {
+        .null,
+        .key {
             width: 40px;
         }
     </style>
@@ -82,24 +83,22 @@
         }
 
         (async () => {
-            if(window.location.hostname !== "localhost") {
+            if (window.location.hostname !== "localhost") {
                 console.warn("Fetching info supported only from localhost!");
                 return;
             }
-            
+
             var dbRes = await fetch("/database");
             var db = await dbRes.json();
-            if(!dbRes.ok) return console.warn("Couldn't fetch data");
+            if (!dbRes.ok) return console.warn("Couldn't fetch data");
 
             app.innerText = "";
 
             const appTitle = document.createElement("h1");
             appTitle.innerText = "Data dictionary of " + db.name;
             app.appendChild(appTitle);
-
             const date = document.createElement("p");
-            var d = new Date();
-            date.innerText = "Generated " + d.toString() + ".";
+            date.innerText = "Loading table information...";
             app.appendChild(date);
 
             var res = await fetch("/tables");
@@ -107,6 +106,8 @@
             var re = await fetch("/fieldsIgnored");
             var fieldsIgnored = await re.json();
             fieldsIgnored = fieldsIgnored.map(el => el.toLowerCase());
+
+            date.innerText = "Generating data dictionary...";
 
             for (var table in tables) {
                 var data = tables[table];
@@ -116,7 +117,7 @@
                 title.innerText = table;
                 app.appendChild(title);
 
-                if(!data.columns) {
+                if (!data.columns) {
                     console.error(data);
                     app.appendChild(htmlToElement("<p>" + data + "<p>"));
                     continue;
@@ -126,7 +127,7 @@
                     var comment = document.createElement("p");
                     comment.innerText = data.comment[0].table_comment;
                     app.appendChild(comment);
-                } catch(e) { }
+                } catch (e) {}
 
                 var head = htmlToElement(`
                 <tr>
@@ -143,16 +144,16 @@
                 `);
 
                 tableEl.appendChild(head);
-                for(var column of data.columns) {
+                for (var column of data.columns) {
                     var el = "";
-                    for(var field in column) {
-                        if(fieldsIgnored.includes(field.toLowerCase())) continue;
-                        if(field.toLowerCase() === "privileges") {
+                    for (var field in column) {
+                        if (fieldsIgnored.includes(field.toLowerCase())) continue;
+                        if (field.toLowerCase() === "privileges") {
                             column[field] = column[field].split(",").join(", ");
                         }
-                        if(column[field]) {
+                        if (column[field]) {
                             el += "<td class='" + field.toLowerCase() + "'>" + column[field] + "</td>";
-                        } else if(field == "Default") {
+                        } else if (field == "Default") {
                             el += "<td class='" + field.toLowerCase() + "'>null</td>";
                         } else {
                             el += "<td class='" + field.toLowerCase() + "'></td>";
@@ -161,12 +162,16 @@
                     tableEl.appendChild(htmlToElement(`
                     <tr>
                         ${el}
-                    </tr>
-                    `))
+                        </tr>
+                        `))
                 }
 
                 app.appendChild(tableEl);
             }
+
+            var d = new Date();
+            date.innerHTML = "Generated " + d.toString() + ".<br>Number of tables: " + Object.keys(tables)
+                .length;
         })()
     </script>
 </body>
