@@ -78,6 +78,11 @@
         .default {
             width: 50px;
         }
+
+        .head {
+            background-color: #444;
+            color: white;
+        }
     </style>
 
     <script>
@@ -142,7 +147,7 @@
                 }
 
                 var head = htmlToElement(`
-                <tr>
+                <tr class="head">
                     ${addField("Field")}
                     ${addField("Type")}
                     ${addField("Collation")}
